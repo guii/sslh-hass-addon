@@ -1,0 +1,78 @@
+#!/usr/bin/env bashio
+set -euo pipefail
+
+# Generate sslh configuration from Home Assistant addon options
+
+LISTEN_HOST=$(bashio::config 'listen_host')
+LISTEN_PORT=$(bashio::config 'listen_port')
+VERBOSE=$(bashio::config 'verbose')
+TIMEOUT=$(bashio::config 'timeout')
+
+CONFIG_FILE="/etc/sslh.cfg"
+
+# Start building the config
+{
+    echo "foreground: true;"
+    echo "inetd: false;"
+    echo "numeric: false;"
+    echo "timeout: ${TIMEOUT};"
+    echo "user: \"nobody\";"
+    echo "pidfile: \"/var/run/sslh.pid\";"
+
+    # Logging
+    if bashio::var.true "${VERBOSE}"; then
+        echo "verbose-config: 3;"
+        echo "verbose-connections: 3;"
+        echo "verbose-connections-error: 3;"
+        echo "verbose-probe-info: 3;"
+        echo "verbose-probe-error: 3;"
+    else
+        echo "verbose-config-error: 3;"
+        echo "verbose-connections-error: 3;"
+        echo "verbose-probe-error: 3;"
+        echo "verbose-system-error: 3;"
+    fi
+
+    # Listen block
+    echo "listen:"
+    echo "("
+    echo "    { host: \"${LISTEN_HOST}\"; port: \"${LISTEN_PORT}\"; }"
+    echo ");"
+
+    # Protocols block
+    echo "protocols:"
+    echo "("
+
+    # Read each protocol entry
+    PROTOCOL_COUNT=$(bashio::config 'protocols | length')
+    for i in $(seq 0 $((PROTOCOL_COUNT - 1))); do
+        ENABLED=$(bashio::config "protocols[${i}].enabled")
+        if bashio::var.true "${ENABLED}"; then
+            NAME=$(bashio::config "protocols[${i}].name")
+            HOST=$(bashio::config "protocols[${i}].host")
+            PORT=$(bashio::config "protocols[${i}].port")
+            echo "    { name: \"${NAME}\"; host: \"${HOST}\"; port: \"${PORT}\"; },"
+        fi
+    done
+
+    echo ");"
+
+} > "${CONFIG_FILE}"
+
+bashio::log.info "sslh configuration generated:"
+bashio::log.info "  Listening on ${LISTEN_HOST}:${LISTEN_PORT}"
+
+# Log enabled protocols
+for i in $(seq 0 $((PROTOCOL_COUNT - 1))); do
+    ENABLED=$(bashio::config "protocols[${i}].enabled")
+    if bashio::var.true "${ENABLED}"; then
+        NAME=$(bashio::config "protocols[${i}].name")
+        HOST=$(bashio::config "protocols[${i}].host")
+        PORT=$(bashio::config "protocols[${i}].port")
+        bashio::log.info "  Forwarding ${NAME} -> ${HOST}:${PORT}"
+    fi
+done
+
+# Start sslh with the generated config
+bashio::log.info "Starting sslh..."
+exec sslh -F "${CONFIG_FILE}"

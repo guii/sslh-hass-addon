@@ -1,0 +1,26 @@
+configuration:
+  listen_host:
+    name: Listen Host
+    description: >-
+      The IP address sslh should listen on. Use "0.0.0.0" to listen
+      on all interfaces.
+  listen_port:
+    name: Listen Port
+    description: >-
+      The port sslh should listen on for incoming connections.
+      All multiplexed protocols will share this port.
+  verbose:
+    name: Verbose Logging
+    description: >-
+      Enable detailed logging for debugging protocol detection
+      and connection routing.
+  timeout:
+    name: Connection Timeout
+    description: >-
+      Timeout in seconds before falling back to the default protocol
+      if no data is received.
+  protocols:
+    name: Protocols
+    description: >-
+      List of protocols to detect and forward. Each entry specifies
+      the protocol name, target host, target port, and whether it is enabled.

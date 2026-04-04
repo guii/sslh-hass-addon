@@ -1,0 +1,52 @@
+name: "sslh - Applicative Protocol Multiplexer"
+version: "1.0.0"
+slug: sslh
+description: >-
+  Share SSH, HTTPS, OpenVPN, and other protocols on the same port.
+  sslh accepts connections and forwards them based on protocol detection.
+url: "https://github.com/g00g1/sslh-docker"
+arch:
+  - amd64
+  - aarch64
+  - armv7
+  - armhf
+  - i386
+startup: services
+boot: auto
+host_network: true
+advanced: false
+stage: stable
+map:
+  - addon_config:rw
+options:
+  listen_host: "0.0.0.0"
+  listen_port: 443
+  verbose: false
+  timeout: 2
+  protocols:
+    - name: "ssh"
+      host: "127.0.0.1"
+      port: 22
+      enabled: true
+    - name: "tls"
+      host: "127.0.0.1"
+      port: 443
+      enabled: true
+    - name: "http"
+      host: "127.0.0.1"
+      port: 80
+      enabled: false
+    - name: "openvpn"
+      host: "127.0.0.1"
+      port: 1194
+      enabled: false
+schema:
+  listen_host: str
+  listen_port: port
+  verbose: bool
+  timeout: int(1,30)
+  protocols:
+    - name: list(ssh|tls|http|openvpn|xmpp|socks5|anyprot|tinc|adb|teamspeak)
+      host: str
+      port: port
+      enabled: bool
