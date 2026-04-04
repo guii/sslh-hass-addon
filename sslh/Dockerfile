@@ -1,9 +1,12 @@
 ARG BUILD_FROM
 FROM $BUILD_FROM
 
-# Install sslh
+# Install sslh from edge community (not available in stable yet)
 RUN \
-    apk add --no-cache \
+    grep -q "edge" /etc/apk/repositories \
+    || echo "https://dl-cdn.alpinelinux.org/alpine/edge/community" >> /etc/apk/repositories \
+    && apk update \
+    && apk add --no-cache \
         sslh
 
 # Copy run script
