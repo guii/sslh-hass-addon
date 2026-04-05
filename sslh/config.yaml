@@ -4,7 +4,7 @@ slug: sslh
 description: >-
   Share SSH, HTTPS, OpenVPN, and other protocols on the same port.
   sslh accepts connections and forwards them based on protocol detection.
-url: "https://github.com/g00g1/sslh-docker"
+url: "https://github.com/guii/sslh-hass-addon"
 arch:
   - amd64
   - aarch64
