@@ -1,5 +1,5 @@
 name: "sslh - Applicative Protocol Multiplexer"
-version: "1.0.0"
+version: "1.1.0"
 slug: sslh
 description: >-
   Share SSH, HTTPS, OpenVPN, and other protocols on the same port.
@@ -14,6 +14,7 @@ arch:
 startup: services
 boot: auto
 host_network: true
+init: false
 advanced: false
 stage: stable
 map:

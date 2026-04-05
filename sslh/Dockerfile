@@ -11,5 +11,8 @@ RUN \
     && sed -i '/edge/d' /etc/apk/repositories \
     && apk update
 
-# Copy s6 service definition
-COPY rootfs /
+# Copy run script
+COPY run.sh /
+RUN chmod a+x /run.sh
+
+CMD [ "/run.sh" ]
