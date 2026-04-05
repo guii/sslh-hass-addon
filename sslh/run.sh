@@ -16,7 +16,6 @@ CONFIG_FILE="/etc/sslh.cfg"
     echo "inetd: false;"
     echo "numeric: false;"
     echo "timeout: ${TIMEOUT};"
-    echo "user: \"nobody\";"
     echo "pidfile: \"/var/run/sslh.pid\";"
 
     if bashio::var.true "${VERBOSE}"; then
@@ -68,4 +67,4 @@ for i in $(seq 0 $((PROTOCOL_COUNT - 1))); do
 done
 
 bashio::log.info "Starting sslh..."
-exec sslh --landlock=0 -F "${CONFIG_FILE}"
+exec sslh -F "${CONFIG_FILE}"
