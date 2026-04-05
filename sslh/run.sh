@@ -67,4 +67,4 @@ for i in $(seq 0 $((PROTOCOL_COUNT - 1))); do
 done
 
 bashio::log.info "Starting sslh..."
-exec sslh -F "${CONFIG_FILE}"
+exec sslh-select -F "${CONFIG_FILE}"
