@@ -7,6 +7,7 @@ bashio::log.info "sslh addon starting..."
 LISTEN_HOST=$(bashio::config 'listen_host')
 LISTEN_PORT=$(bashio::config 'listen_port')
 VERBOSE=$(bashio::config 'verbose')
+TRANSPARENT=$(bashio::config 'transparent')
 TIMEOUT=$(bashio::config 'timeout')
 
 CONFIG_FILE="/etc/sslh.cfg"
@@ -17,6 +18,10 @@ CONFIG_FILE="/etc/sslh.cfg"
     echo "numeric: false;"
     echo "timeout: ${TIMEOUT};"
     echo "pidfile: \"/var/run/sslh.pid\";"
+
+    if bashio::var.true "${TRANSPARENT}"; then
+        echo "transparent: true;"
+    fi
 
     if bashio::var.true "${VERBOSE}"; then
         echo "verbose-config: 3;"
@@ -46,7 +51,7 @@ CONFIG_FILE="/etc/sslh.cfg"
             NAME=$(bashio::config "protocols[${i}].name")
             HOST=$(bashio::config "protocols[${i}].host")
             PORT=$(bashio::config "protocols[${i}].port")
-            echo "    { name: \"${NAME}\"; host: \"${HOST}\"; port: \"${PORT}\"; },"
+            echo "    { name: \"${NAME}\"; host: \"${HOST}\"; port: \"${PORT}\"; log_level: 0; },"
         fi
     done
 
@@ -55,6 +60,7 @@ CONFIG_FILE="/etc/sslh.cfg"
 } > "${CONFIG_FILE}"
 
 bashio::log.info "Listening on ${LISTEN_HOST}:${LISTEN_PORT}"
+bashio::var.true "${TRANSPARENT}" && bashio::log.info "Transparent mode: enabled"
 
 for i in $(seq 0 $((PROTOCOL_COUNT - 1))); do
     ENABLED=$(bashio::config "protocols[${i}].enabled")
